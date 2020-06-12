@@ -4,9 +4,9 @@ namespace src\push_drivers;
 
 use Exception;
 use src\base\BaseObject;
+use src\exceptions\ServiceUnavailableException;
 use src\helpers\Curl;
 use src\helpers\JWT;
-use Yii;
 
 /**
  * Class ApplePushNotificationService
@@ -15,11 +15,11 @@ use Yii;
  */
 final class ApplePushNotificationService extends BaseObject implements NotificationPushInterface
 {
-    protected $server           = 'https://api.development.push.apple.com/3/device';
-    protected $certificate_path = 'PushNotificationKeyiOS.p8';
-    protected $certificate_key  = 'ASN64B8YH6';
-    protected $team             = '4VGVSLGP3J';
-    protected $app_id           = 'com.affiliate.stats';
+    protected $server           = '';
+    protected $certificate_path = '';
+    protected $certificate_key  = '';
+    protected $team             = '';
+    protected $app_id           = '';
 
     /**
      * @param string $token
@@ -66,7 +66,7 @@ final class ApplePushNotificationService extends BaseObject implements Notificat
      * @param array  $body
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     private static function curl($url, array $headers, array $body)
     {
@@ -82,7 +82,7 @@ final class ApplePushNotificationService extends BaseObject implements Notificat
             CURLOPT_POST           => TRUE,
             CURLOPT_POSTFIELDS     => json_encode($body),
         ]);
-        if (FALSE === $response) throw new Exception(__METHOD__, __LINE__);
+        if (FALSE === $response) throw new ServiceUnavailableException(__METHOD__, __LINE__);
 
         return $response;
     }

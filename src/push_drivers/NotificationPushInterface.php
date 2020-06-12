@@ -14,6 +14,7 @@ interface NotificationPushInterface
      * @param array  $message
      *
      * @return string
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     public function sendMessage($token, array $message = []);
 }

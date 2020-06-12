@@ -2,12 +2,12 @@
 
 namespace src\helpers;
 
-use Yii;
+use src\exceptions\ServiceUnavailableException;
 
 /**
- * Class NotificationPushBase
+ * Class Curl
  *
- * @package common\models\push_drivers
+ * @package src\helpers
  */
 final class Curl
 {
@@ -15,14 +15,16 @@ final class Curl
      * @param array $curl_setopt_array
      *
      * @return string
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     public static function exec(array $curl_setopt_array)
     {
         $ch = curl_init();
         curl_setopt_array($ch, $curl_setopt_array);
         $result = curl_exec($ch);
-        static::curlLog($ch, $curl_setopt_array, $result);
+        static::log($ch, $curl_setopt_array, $result);
         curl_close($ch);
+        if (FALSE === $result) throw new ServiceUnavailableException(__METHOD__, __LINE__);
 
         return "{$result}";
     }
@@ -32,23 +34,48 @@ final class Curl
      * @param array $curl_setopt_array
      * @param       $result
      */
-    protected static function curlLog($ch, array $curl_setopt_array, $result)
+    protected static function log($ch, array $curl_setopt_array, $result)
     {
-        $log = [
+        $log = self::curlInfo($ch, $curl_setopt_array, $result);
+        $log = var_export($log, TRUE);
+        $log = str_replace(PHP_EOL, NULL, $log);
+        $log_file    = self::logFileName();
+        error_log(
+            "\n{$log};\n",
+            3,
+            "{$log_file}"
+        );
+    }
+
+    /**
+     * @param       $ch
+     * @param array $curl_setopt_array
+     * @param       $result
+     *
+     * @return array
+     */
+    protected static function curlInfo($ch, array $curl_setopt_array, $result)
+    {
+        return [
             'curl_errno'        => curl_errno($ch),
             'curl_error'        => curl_error($ch),
-            'curl_setopt_array' => self::curlOptsArray($curl_setopt_array),
+            'curl_setopt_array' => self::curlOptions($curl_setopt_array),
             'curl_response'     => $result,
             'curl_getinfo'      => curl_getinfo($ch),
         ];
+    }
 
+    /**
+     * @return string
+     */
+    protected static function logFileName()
+    {
         $date = date('Y-m-d');
         $user = posix_geteuid();
         $user = posix_getpwuid($user);
         $user = $user['name'];
-        $log  = var_export($log, TRUE);
-        $log  = str_replace(PHP_EOL, NULL, $log);
-        error_log("\n{$log};\n", 3, "/tmp/{$date}_{$user}.log");
+
+        return "/tmp/{$date}_{$user}.log";
     }
 
     /**
@@ -56,7 +83,7 @@ final class Curl
      *
      * @return array|false
      */
-    protected static function curlOptsArray(array $curl_setopt_array)
+    protected static function curlOptions(array $curl_setopt_array)
     {
         $constants = get_defined_constants(TRUE);
         $constants = $constants['curl'];

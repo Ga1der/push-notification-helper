@@ -4,6 +4,7 @@ namespace src\push_drivers;
 
 use Exception;
 use src\base\BaseObject;
+use src\exceptions\ServiceUnavailableException;
 use src\helpers\Curl;
 
 /**
@@ -13,15 +14,15 @@ use src\helpers\Curl;
  */
 final class FirebaseCloudMessaging extends BaseObject implements NotificationPushInterface
 {
-    public $server      = 'https://android.googleapis.com/gcm/send';
-    public $certificate = 'AAAA90TMYDc:APA91bHbvN_qoUzPxw1Avug0y5a3GpHqdpR9BuC7IR_1ZldBjXO9hWxiMWjfW3cDYGpsoPg9muuLWoZdqqhdYJWfxlpw7QqAF9OFQz6-HAM-cxu6th9gWi_NKoI5S-TZD765ZD91QAj7';
+    public $server      = '';
+    public $certificate = '';
 
     /**
      * @param string $token
      * @param array  $message
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     public function sendMessage($token, array $message = [])
     {
@@ -47,7 +48,7 @@ final class FirebaseCloudMessaging extends BaseObject implements NotificationPus
      * @param array  $body
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     final private static function curl($url, array $headers, array $body)
     {
@@ -58,7 +59,7 @@ final class FirebaseCloudMessaging extends BaseObject implements NotificationPus
             CURLOPT_POST           => TRUE,
             CURLOPT_POSTFIELDS     => json_encode($body),
         ]);
-        if (FALSE === $response) throw new Exception(__METHOD__, __LINE__);
+        if (FALSE === $response) throw new ServiceUnavailableException(__METHOD__, __LINE__);
 
         return $response;
     }

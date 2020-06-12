@@ -8,6 +8,7 @@ use Exception;
  * Class BaseException
  *
  * @package src\exceptions
+ * @property-read string    name
  * @property-read string    message
  * @property-read string    file
  * @property-read int       line
@@ -21,7 +22,16 @@ abstract class BaseException extends Exception
     /**
      * @return string the user-friendly name of this exception
      */
-    abstract public function getName();
+    public function getName()
+    {
+        $class     = get_class($this);
+        $lastSlash = strrpos($class, '\\', 0);
+        $lastSlash = intval($lastSlash);
+        $className = substr($class, $lastSlash, NULL);
+        $className = strval($className);
+
+        return $className;
+    }
 
     /**
      * @param $name
