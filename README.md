@@ -54,7 +54,7 @@ $error = Push::apple("{$aps['certificate_path']}", "{$aps['certificate_key']}", 
 ```php
 /** @var \src\push_drivers\FirebaseCloudMessaging $google_cloud_messaging */
 $google_cloud_messaging = new FirebaseCloudMessaging([
-    'server' => "{$gcm['server']}",
+    'server'      => "{$gcm['server']}",
     'certificate' => "{$gcm['certificate']}",
 ]);
 
