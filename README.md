@@ -1,9 +1,9 @@
 # Easy way to push notifications
 
 ## Apple
+* [Apple Payload Format](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW1)
+* [Apple Errors](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW17)
 
-###### [Apple Payload Format](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW1)
-###### [Apple Errors](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW17)
 ```php
 /** @var \src\push_drivers\ApplePushNotificationService $apple_push_notification_service */
 $apple_push_notification_service = new ApplePushNotificationService([
@@ -47,9 +47,8 @@ $error2 = Push::apple("{$aps['certificate_path']}", "{$aps['certificate_key']}",
 ```
 
 ## Google
-
-###### [Google Payload Format](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications)
-###### [Google Errors](https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes)
+* [Google Payload Format](https://firebase.google.com/docs/cloud-messaging/concept-options#notifications)
+* [Google Errors](https://firebase.google.com/docs/cloud-messaging/http-server-ref#error-codes)
 
 ```php
 /** @var \src\push_drivers\FirebaseCloudMessaging $google_cloud_messaging */
