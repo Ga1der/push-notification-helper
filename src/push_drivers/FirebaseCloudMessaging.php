@@ -2,8 +2,8 @@
 
 namespace src\push_drivers;
 
-use Exception;
 use src\base\BaseObject;
+use src\exceptions\InvalidConfigException;
 use src\exceptions\ServiceUnavailableException;
 use src\helpers\Curl;
 
@@ -14,8 +14,17 @@ use src\helpers\Curl;
  */
 final class FirebaseCloudMessaging extends BaseObject implements NotificationPushInterface
 {
-    public $server      = '';
-    public $certificate = '';
+    public $server;
+    public $certificate;
+
+    /**
+     * @throws \src\exceptions\InvalidConfigException
+     */
+    public function init()
+    {
+        if (empty($this->server)) throw new InvalidConfigException(__METHOD__, __LINE__);
+        if (empty($this->certificate)) throw new InvalidConfigException(__METHOD__, __LINE__);
+    }
 
     /**
      * @param string $token
@@ -30,7 +39,7 @@ final class FirebaseCloudMessaging extends BaseObject implements NotificationPus
         $authorization = $this->certificate;
 
         /**
-         *
+         * @see https://firebase.google.com/docs/cloud-messaging/concept-options#notifications
          */
         $message['to'] = $token;
 

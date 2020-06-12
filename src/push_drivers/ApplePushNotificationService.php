@@ -2,8 +2,8 @@
 
 namespace src\push_drivers;
 
-use Exception;
 use src\base\BaseObject;
+use src\exceptions\InvalidConfigException;
 use src\exceptions\ServiceUnavailableException;
 use src\helpers\Curl;
 use src\helpers\JWT;
@@ -15,18 +15,33 @@ use src\helpers\JWT;
  */
 final class ApplePushNotificationService extends BaseObject implements NotificationPushInterface
 {
-    protected $server           = '';
-    protected $certificate_path = '';
-    protected $certificate_key  = '';
-    protected $team             = '';
-    protected $app_id           = '';
+    protected $server;
+    protected $certificate_path;
+    protected $certificate_key;
+    protected $team;
+    protected $app_id;
+
+    /**
+     * @throws \src\exceptions\InvalidConfigException
+     */
+    public function init()
+    {
+        if (empty($this->server)) throw new InvalidConfigException(__METHOD__, __LINE__);
+        if (empty($this->certificate_path)) throw new InvalidConfigException(__METHOD__, __LINE__);
+        if (empty($this->certificate_key)) throw new InvalidConfigException(__METHOD__, __LINE__);
+        if (empty($this->team)) throw new InvalidConfigException(__METHOD__, __LINE__);
+        if (empty($this->app_id)) throw new InvalidConfigException(__METHOD__, __LINE__);
+    }
 
     /**
      * @param string $token
      * @param array  $message
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\CertificateException
+     * @throws \src\exceptions\FileAccessException
+     * @throws \src\exceptions\InvalidConfigException
+     * @throws \src\exceptions\ServiceUnavailableException
      */
     public function sendMessage($token, array $message = [])
     {
@@ -42,10 +57,10 @@ final class ApplePushNotificationService extends BaseObject implements Notificat
         );
 
         $manual = 'https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW1';
-        if (!isset($message['aps'])) throw new Exception("'aps' not found! More: {$manual}", __LINE__);
-        if (!is_array($message['aps'])) throw new Exception("'aps' is invalid! More: {$manual}", __LINE__);
+        if (!isset($message['aps'])) throw new InvalidConfigException("'aps' not found! More: {$manual}", __LINE__);
+        if (!is_array($message['aps'])) throw new InvalidConfigException("'aps' is invalid! More: {$manual}", __LINE__);
         if (isset($message['aps']['alert'])) {
-            if (is_string($message['aps']['alert']) && is_array($message['aps']['alert'])) throw new Exception("'aps -> alert' is invalid! More: {$manual}", __LINE__);
+            if (is_string($message['aps']['alert']) && is_array($message['aps']['alert'])) throw new InvalidConfigException("'aps -> alert' is invalid! More: {$manual}", __LINE__);
         }
 
         /**

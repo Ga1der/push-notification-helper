@@ -83,6 +83,7 @@ yEZ25ifY
     $error    = Push::applePushError($response);
 
     {
+        echo __FILE__ . "::" .__LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
         echo "{$aps['server']}" . PHP_EOL;
         echo "{$aps['app_id']}" . PHP_EOL;
@@ -115,6 +116,7 @@ yEZ25ifY
     $error    = Push::googlePushError($response);
 
     {
+        echo __FILE__ . "::" .__LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
         echo "{$gcm['server']}" . PHP_EOL;
         echo "{$token}" . PHP_EOL;

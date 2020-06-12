@@ -2,8 +2,8 @@
 
 namespace src\base;
 
-use Exception;
-use Yii;
+use src\exceptions\InaccessiblePropertyException;
+use src\exceptions\InvalidPropertyException;
 
 /**
  * Class BaseObject
@@ -49,16 +49,17 @@ abstract class BaseObject
      * @param $name
      *
      * @return mixed
-     * @throws \Exception
+     * @throws \src\exceptions\InaccessiblePropertyException
+     * @throws \src\exceptions\InvalidPropertyException
      */
     public function __get($name)
     {
         $getter = 'get' . $name;
         $setter = 'set' . $name;
         if (!method_exists($this, $getter) && method_exists($this, $setter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InaccessiblePropertyException(__METHOD__, __LINE__);
         if (!method_exists($this, $getter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InvalidPropertyException(__METHOD__, __LINE__);
 
         return $this->{$getter}();
     }
@@ -67,16 +68,17 @@ abstract class BaseObject
      * @param $name
      * @param $value
      *
-     * @throws \Exception
+     * @throws \src\exceptions\InaccessiblePropertyException
+     * @throws \src\exceptions\InvalidPropertyException
      */
     public function __set($name, $value)
     {
         $getter = 'get' . $name;
         $setter = 'set' . $name;
         if (!method_exists($this, $setter) && method_exists($this, $getter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InaccessiblePropertyException(__METHOD__, __LINE__);
         if (!method_exists($this, $setter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InvalidPropertyException(__METHOD__, __LINE__);
 
         $this->{$setter}($value);
     }
@@ -97,16 +99,17 @@ abstract class BaseObject
     /**
      * @param $name
      *
-     * @throws \Exception
+     * @throws \src\exceptions\InaccessiblePropertyException
+     * @throws \src\exceptions\InvalidPropertyException
      */
     public function __unset($name)
     {
         $getter = 'get' . $name;
         $setter = 'set' . $name;
         if (!method_exists($this, $setter) && method_exists($this, $getter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InaccessiblePropertyException(__METHOD__, __LINE__);
         if (!method_exists($this, $setter))
-            throw new Exception(__METHOD__, __LINE__);
+            throw new InvalidPropertyException(__METHOD__, __LINE__);
 
         $this->{$setter}(NULL);
     }

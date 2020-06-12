@@ -4,7 +4,6 @@ namespace src\helpers;
 
 use src\push_drivers\ApplePushNotificationService;
 use src\push_drivers\FirebaseCloudMessaging;
-use Yii;
 
 /**
  * Class PushNotificationHelper

@@ -2,7 +2,8 @@
 
 namespace src\helpers;
 
-use Exception;
+use src\exceptions\CertificateException;
+use src\exceptions\FileAccessException;
 
 /**
  * Class JWT
@@ -18,7 +19,8 @@ final class JWT
      * @param string $algorithm
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\CertificateException
+     * @throws \src\exceptions\FileAccessException
      */
     public static function sign(
         $certificate,
@@ -62,13 +64,14 @@ final class JWT
      * @param string $certificate
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\CertificateException
+     * @throws \src\exceptions\FileAccessException
      */
     private static function cert($certificate)
     {
         if (is_file($certificate)) $certificate = file_get_contents($certificate);
-        if (FALSE === $certificate) throw new Exception(__METHOD__, __LINE__);
-        if (empty($certificate)) throw new Exception(__METHOD__, __LINE__);
+        if (FALSE === $certificate) throw new FileAccessException(__METHOD__, __LINE__);
+        if (empty($certificate)) throw new CertificateException(__METHOD__, __LINE__);
 
         return "{$certificate}";
     }
@@ -79,7 +82,7 @@ final class JWT
      * @param string $algorithm
      *
      * @return string
-     * @throws \Exception
+     * @throws \src\exceptions\CertificateException
      */
     private static function ssl(
         $message,
@@ -94,7 +97,7 @@ final class JWT
             "{$certificate}",
             "{$algorithm}"
         );
-        if (FALSE === $success) throw new Exception(__METHOD__, __LINE__);
+        if (FALSE === $success) throw new CertificateException(__METHOD__, __LINE__);
 
         return $signature;
     }
