@@ -32,7 +32,8 @@ $error = Push::applePushError($response);
 ```
 
 ```php
-$error2 = Push::apple("{$aps['certificate_path']}", "{$aps['certificate_key']}", "{$aps['team']}", "{$aps['server']}", "{$aps['app_id']}", "{$device['token']}", [
+/* error message (if any) */
+$error = Push::apple("{$aps['certificate_path']}", "{$aps['certificate_key']}", "{$aps['team']}", "{$aps['server']}", "{$aps['app_id']}", "{$device['token']}", [
     "aps"   => [
         "alert" => [
             "title"          => "Game Request",
