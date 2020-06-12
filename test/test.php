@@ -83,7 +83,7 @@ yEZ25ifY
     $error    = Push::applePushError($response);
 
     {
-        echo __FILE__ . "::" .__LINE__ . PHP_EOL;
+        echo __FILE__ . "::" . __LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
         echo "{$aps['server']}" . PHP_EOL;
         echo "{$aps['app_id']}" . PHP_EOL;
@@ -102,21 +102,20 @@ yEZ25ifY
         "{$gcm['server']}",
         "{$gcm['certificate']}"
     )->sendMessage($token = 'fsfXi7LGoQ0:APA91bFY0z18d2Fx9OADvciwnmAfXUi6k709Rtk1kys9An52QAw97LTUD-azvUIv_S8cQtvC6WJ5npwp03ptj19poIAyBWfFX1_5edwyhZb2T9mDeOEy-VR9ur5nnGqhPGB9GHzy6xRt', [
-        "aps"   => [
-            "alert" => [
-                "title"          => "Game Request",
-                "body"           => "Bob wants to play poker",
-                "action-loc-key" => "PLAY",
-            ],
-            "badge" => 5,
+        "token"        => "{$token}",
+        "notification" => [
+            "title" => "Portugal vs. Denmark",
+            "body"  => "great match!",
         ],
-        "acme1" => "bar",
-        "acme2" => ["bang", "whiz"],
+        "data"         => [
+            "Nick" => "Mario",
+            "Room" => "PortugalVSDenmark",
+        ],
     ]);
     $error    = Push::googlePushError($response);
 
     {
-        echo __FILE__ . "::" .__LINE__ . PHP_EOL;
+        echo __FILE__ . "::" . __LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
         echo "{$gcm['server']}" . PHP_EOL;
         echo "{$token}" . PHP_EOL;

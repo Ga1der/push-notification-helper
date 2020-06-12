@@ -41,7 +41,8 @@ final class FirebaseCloudMessaging extends BaseObject implements NotificationPus
         /**
          * @see https://firebase.google.com/docs/cloud-messaging/concept-options#notifications
          */
-        $message['to'] = $token;
+        $message['to']    = $token;
+        $message['token'] = $token;
 
         $result = self::curl($url, [
             "Authorization: key={$authorization}",
