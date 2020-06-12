@@ -109,7 +109,7 @@ yEZ25ifY
         "acme1" => "bar",
         "acme2" => ["bang", "whiz"],
     ]);
-    $error    = Push::applePushError($response);
+    $error    = Push::googlePushError($response);
 
     {
         echo str_repeat('=', 120) . PHP_EOL;
