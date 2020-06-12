@@ -9,11 +9,11 @@ use src\helpers\JWT;
 use Yii;
 
 /**
- * Class NotificationPushIOs
+ * Class ApplePushNotificationService
  *
- * @package common\models\push_drivers
+ * @package src\push_drivers
  */
-final class NotificationPushIOs extends BaseObject implements NotificationPushInterface
+final class ApplePushNotificationService extends BaseObject implements NotificationPushInterface
 {
     protected $server           = 'https://api.development.push.apple.com/3/device';
     protected $certificate_path = 'PushNotificationKeyiOS.p8';
@@ -28,7 +28,7 @@ final class NotificationPushIOs extends BaseObject implements NotificationPushIn
      * @return string
      * @throws \Exception
      */
-    public function sendMessage(string $token, array $message = []) : string
+    public function sendMessage($token, array $message = [])
     {
         $url = vsprintf('%s/%s', [
             rtrim($this->server, '/'),
@@ -66,10 +66,11 @@ final class NotificationPushIOs extends BaseObject implements NotificationPushIn
      * @param array  $body
      *
      * @return string
+     * @throws \Exception
      */
-    private static function curl(string $url, array $headers, array $body) : string
+    private static function curl($url, array $headers, array $body)
     {
-        return Curl::exec([
+        $response = Curl::exec([
             CURLOPT_PORT           => 443,
             CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_2_0,
             CURLOPT_SSL_VERIFYPEER => FALSE,
@@ -81,5 +82,8 @@ final class NotificationPushIOs extends BaseObject implements NotificationPushIn
             CURLOPT_POST           => TRUE,
             CURLOPT_POSTFIELDS     => json_encode($body),
         ]);
+        if (FALSE === $response) throw new Exception(__METHOD__, __LINE__);
+
+        return $response;
     }
 }

@@ -12,33 +12,36 @@ use Exception;
 final class JWT
 {
     /**
-     * @param string $certificate
-     * @param string $certificate_key
-     * @param string $certificate_team
+     * @param        $certificate
+     * @param        $certificate_key
+     * @param        $certificate_team
+     * @param string $algorithm
      *
      * @return string
      * @throws \Exception
      */
-    final public static function sign(string $certificate, string $certificate_key, string $certificate_team) : string
+    public static function sign(
+        $certificate,
+        $certificate_key,
+        $certificate_team,
+        $algorithm = 'ES256'
+    )
     {
-        $p1       = json_encode([
-            'alg' => 'ES256',
+        $jwt_header    = json_encode([
+            'alg' => $algorithm,
             'kid' => $certificate_key,
         ]);
-        $p2       = json_encode([
+        $jwt_payload   = json_encode([
             'iat' => time(),
             'iss' => $certificate_team,
         ]);
-        $p1       = self::encode($p1);
-        $p2       = self::encode($p2);
-        $auth_key = "{$p1}.{$p2}";
+        $jwt_header    = self::encode($jwt_header);
+        $jwt_payload   = self::encode($jwt_payload);
+        $cert          = self::cert($certificate);
+        $sing          = self::ssl("{$jwt_header}.{$jwt_payload}", $cert);
+        $jwt_signature = self::encode($sing);
 
-        $cert     = self::cert($certificate);
-        $sing     = self::ssl($auth_key, $cert);
-        $p3       = self::encode($sing);
-        $auth_key .= ".{$p3}";
-
-        return $auth_key;
+        return "{$jwt_header}.{$jwt_payload}.{$jwt_signature}";
     }
 
     /**
@@ -46,7 +49,7 @@ final class JWT
      *
      * @return string
      */
-    private static function encode(string $input) : string
+    private static function encode($input)
     {
         $input = base64_encode($input);
         $input = strtr($input, '+/', '-_');
@@ -61,29 +64,35 @@ final class JWT
      * @return string
      * @throws \Exception
      */
-    private static function cert(string $certificate) : string
+    private static function cert($certificate)
     {
         if (is_file($certificate)) $certificate = file_get_contents($certificate);
         if (FALSE === $certificate) throw new Exception(__METHOD__, __LINE__);
+        if (empty($certificate)) throw new Exception(__METHOD__, __LINE__);
 
         return "{$certificate}";
     }
 
     /**
-     * @param string $msg
-     * @param string $cert
+     * @param        $message
+     * @param        $certificate
+     * @param string $algorithm
      *
      * @return string
      * @throws \Exception
      */
-    private static function ssl(string $msg, string $cert) : string
+    private static function ssl(
+        $message,
+        $certificate,
+        $algorithm = 'SHA256'
+    )
     {
         $signature = '';
         $success   = openssl_sign(
-            "{$msg}",
+            "{$message}",
             $signature,
-            "{$cert}",
-            'SHA256'
+            "{$certificate}",
+            "{$algorithm}"
         );
         if (FALSE === $success) throw new Exception(__METHOD__, __LINE__);
 

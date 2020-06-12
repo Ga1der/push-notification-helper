@@ -2,7 +2,6 @@
 
 namespace src\helpers;
 
-use src\base\BaseObject;
 use Yii;
 
 /**
@@ -17,7 +16,7 @@ final class Curl
      *
      * @return string
      */
-    public static function exec(array $curl_setopt_array): string
+    public static function exec(array $curl_setopt_array)
     {
         $ch = curl_init();
         curl_setopt_array($ch, $curl_setopt_array);

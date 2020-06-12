@@ -7,9 +7,13 @@
         }
     ],
     "require": {
-        "php": "7.4.*"
+        "php": "5.4.*",
+        "ext-curl": "*",
+        "ext-posix": "*",
+        "ext-json": "*",
+        "ext-openssl": "*"
     },
     "require-dev": {
-        "php": "7.4.*"
+        "php": "5.4.*"
     }
 }

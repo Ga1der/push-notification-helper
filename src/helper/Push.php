@@ -1,10 +1,9 @@
 <?php
-declare(strict_types=1);
 
 namespace src\helpers;
 
-use src\push_drivers\NotificationPushAndroid;
-use src\push_drivers\NotificationPushIOs;
+use src\push_drivers\ApplePushNotificationService;
+use src\push_drivers\FirebaseCloudMessaging;
 use Yii;
 
 /**
@@ -15,39 +14,36 @@ use Yii;
 final class Push
 {
     /**
-     * @return \src\push_drivers\NotificationPushIOs
+     * @param $app_id
+     * @param $server
+     * @param $certificate
+     * @param $certificate_key
+     * @param $team
+     *
+     * @return \src\push_drivers\ApplePushNotificationService
      */
-    private static function applePushDriver() : NotificationPushIOs
+    public static function appleDriver(
+        $app_id,
+        $server,
+        $certificate,
+        $certificate_key,
+        $team
+    )
     {
-        /** @var \src\push_drivers\NotificationPushIOs $apple_push_notification_service */
-        $apple_push_notification_service = new NotificationPushIOs([
-            'app_id'           => 'com.affiliate.stats',
-            'server'           => 'https://api.development.push.apple.com/3/device',
-            'certificate_path' => '-----BEGIN PRIVATE KEY-----
-MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg+rHVsRwahA0HS6uw
-p959A6KvF1618Kn7fb43qaiXsiqgCgYIKoZIzj0DAQehRANCAARY10RixEuZBqZq
-Y2dsHFHIUd6Pta7IRA1daZDWYLU1MMYRAjFBSK7l+50FQ3U2ARnQh5nqrWcD41Og
-yEZ25ifY
------END PRIVATE KEY-----',
-            'certificate_key'  => 'TR2LS8UDHM',
-            'team'             => '4VGVSLGP3J',
+        static $cache;
+        $key = serialize(func_get_args());
+        if (isset($cache[$key])) return $cache[$key];
+
+        /** @var \src\push_drivers\ApplePushNotificationService $apple_push_notification_service */
+        $apple_push_notification_service = new ApplePushNotificationService([
+            'app_id'           => $app_id,
+            'server'           => $server,
+            'certificate_path' => $certificate,
+            'certificate_key'  => $certificate_key,
+            'team'             => $team,
         ]);
 
-        return $apple_push_notification_service;
-    }
-
-    /**
-     * @return \src\push_drivers\NotificationPushAndroid
-     */
-    private static function googlePushDriver() : NotificationPushAndroid
-    {
-        /** @var \src\push_drivers\NotificationPushAndroid $google_cloud_messaging */
-        $google_cloud_messaging = new NotificationPushAndroid([
-            'server'      => 'https://fcm.googleapis.com/fcm/send',
-            'certificate' => 'AAAA90TMYDc:APA91bHbvN_qoUzPxw1Avug0y5a3GpHqdpR9BuC7IR_1ZldBjXO9hWxiMWjfW3cDYGpsoPg9muuLWoZdqqhdYJWfxlpw7QqAF9OFQz6-HAM-cxu6th9gWi_NKoI5S-TZD765ZD91QAj7',
-        ]);
-
-        return $google_cloud_messaging;
+        return $cache[$key] = $apple_push_notification_service;
     }
 
     /**
@@ -55,7 +51,7 @@ yEZ25ifY
      *
      * @return string|null
      */
-    protected static function applePushError($response)
+    public static function applePushError($response)
     {
         $pattern = '/HTTP\/2 (?P<code>\d+)\s.*\s*(?:apns-id:.*)(?:\s.*\s*(?P<json>{".*":.*}))?/';
         if (preg_match("{$pattern}", "{$response}", $matches)) {
@@ -70,11 +66,35 @@ yEZ25ifY
     }
 
     /**
+     * @param $server
+     * @param $certificate
+     *
+     * @return mixed|\src\push_drivers\FirebaseCloudMessaging
+     */
+    public static function googleDriver(
+        $server,
+        $certificate
+    )
+    {
+        static $cache;
+        $key = serialize(func_get_args());
+        if (isset($cache[$key])) return $cache[$key];
+
+        /** @var \src\push_drivers\FirebaseCloudMessaging $google_cloud_messaging */
+        $google_cloud_messaging = new FirebaseCloudMessaging([
+            'server'      => $server,
+            'certificate' => $certificate,
+        ]);
+
+        return $cache[$key] = $google_cloud_messaging;
+    }
+
+    /**
      * @param string $response
      *
      * @return string|null
      */
-    protected static function googlePushError(string $response) : ?string
+    public static function googlePushError($response)
     {
         $pattern = '/(?P<json>{".*":.*})/';
         if (preg_match("{$pattern}", "{$response}", $matches)) {
@@ -84,34 +104,5 @@ yEZ25ifY
         }
 
         return NULL;
-    }
-
-    /**
-     * @param string $token
-     * @param array  $message
-     *
-     * @return array
-     * @throws \Exception
-     */
-    public static function apple(string $token, array $message) : array
-    {
-        $response = self::applePushDriver()->sendMessage($token, $message);
-        $error    = self::applePushError($response);
-
-        return [$response, $error];
-    }
-
-    /**
-     * @param string $token
-     * @param array  $message
-     *
-     * @return array
-     */
-    public static function google(string $token, array $message) : array
-    {
-        $response = self::googlePushDriver()->sendMessage($token, $message);
-        $error    = self::googlePushError($response);
-
-        return [$response, $error];
     }
 }
