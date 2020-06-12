@@ -10,6 +10,9 @@ require_once __DIR__ . './../src/push_drivers/NotificationPushInterface.php';
 require_once __DIR__ . './../src/push_drivers/ApplePushNotificationService.php';
 require_once __DIR__ . './../src/push_drivers/FirebaseCloudMessaging.php';
 
+/**
+ * Class TestData
+ */
 final class TestData
 {
 //    public static $private_key = <<<EOD
