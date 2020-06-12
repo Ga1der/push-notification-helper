@@ -13,6 +13,66 @@ use src\push_drivers\FirebaseCloudMessaging;
 final class Push
 {
     /**
+     * @param       $certificate
+     * @param       $certificate_key
+     * @param       $team
+     * @param       $server
+     * @param       $app_id
+     * @param       $token
+     * @param array $message
+     *
+     * @return string|null
+     * @throws \src\exceptions\CertificateException
+     * @throws \src\exceptions\FileAccessException
+     * @throws \src\exceptions\InvalidConfigException
+     * @throws \src\exceptions\ServiceUnavailableException
+     */
+    public static function apple(
+        $certificate,
+        $certificate_key,
+        $team,
+        $server,
+        $app_id,
+        $token,
+        array $message
+    )
+    {
+        $response = self::appleDriver(
+            $app_id,
+            $server,
+            $certificate,
+            $certificate_key,
+            $team
+        )->sendMessage($token, $message);
+
+        return self::applePushError($response);
+    }
+
+    /**
+     * @param       $certificate
+     * @param       $server
+     * @param       $token
+     * @param array $message
+     *
+     * @return string|null
+     * @throws \src\exceptions\ServiceUnavailableException
+     */
+    public static function google(
+        $certificate,
+        $server,
+        $token,
+        array $message
+    )
+    {
+        $response = self::googleDriver(
+            $server,
+            $certificate
+        )->sendMessage($token, $message);
+
+        return self::googlePushError($response);
+    }
+
+    /**
      * @param $app_id
      * @param $server
      * @param $certificate
@@ -65,8 +125,8 @@ final class Push
     }
 
     /**
-     * @param $server
-     * @param $certificate
+     * @param string $server
+     * @param string $certificate
      *
      * @return mixed|\src\push_drivers\FirebaseCloudMessaging
      */

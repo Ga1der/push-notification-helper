@@ -82,6 +82,19 @@ yEZ25ifY
     ]);
     $error    = Push::applePushError($response);
 
+    $error2 = Push::apple("{$aps['certificate_path']}", "{$aps['certificate_key']}", "{$aps['team']}", "{$aps['server']}", "{$aps['app_id']}", "{$token}", [
+        "aps"   => [
+            "alert" => [
+                "title"          => "Game Request",
+                "body"           => "Bob wants to play poker",
+                "action-loc-key" => "PLAY",
+            ],
+            "badge" => 5,
+        ],
+        "acme1" => "bar",
+        "acme2" => ["bang", "whiz"],
+    ]);
+
     {
         echo __FILE__ . "::" . __LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
@@ -92,17 +105,17 @@ yEZ25ifY
         echo "{$response}" . PHP_EOL;
         echo str_repeat('-', 120) . PHP_EOL;
         echo "{$error}" . PHP_EOL;
+        echo str_repeat('-', 120) . PHP_EOL;
+        echo "{$error2}" . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
     }
 }
 {
-    $gcm = TestData::$gcm;
-
+    $gcm      = TestData::$gcm;
     $response = Push::googleDriver(
         "{$gcm['server']}",
         "{$gcm['certificate']}"
     )->sendMessage($token = 'fsfXi7LGoQ0:APA91bFY0z18d2Fx9OADvciwnmAfXUi6k709Rtk1kys9An52QAw97LTUD-azvUIv_S8cQtvC6WJ5npwp03ptj19poIAyBWfFX1_5edwyhZb2T9mDeOEy-VR9ur5nnGqhPGB9GHzy6xRt', [
-        "token"        => "{$token}",
         "notification" => [
             "title" => "Portugal vs. Denmark",
             "body"  => "great match!",
@@ -114,6 +127,17 @@ yEZ25ifY
     ]);
     $error    = Push::googlePushError($response);
 
+    $error2 = Push::google("{$gcm['certificate']}", "{$gcm['server']}", "{$token}", [
+        "notification" => [
+            "title" => "Portugal vs. Denmark",
+            "body"  => "great match!",
+        ],
+        "data"         => [
+            "Nick" => "Mario",
+            "Room" => "PortugalVSDenmark",
+        ],
+    ]);
+
     {
         echo __FILE__ . "::" . __LINE__ . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
@@ -123,6 +147,8 @@ yEZ25ifY
         echo "{$response}" . PHP_EOL;
         echo str_repeat('-', 120) . PHP_EOL;
         echo "{$error}" . PHP_EOL;
+        echo str_repeat('-', 120) . PHP_EOL;
+        echo "{$error2}" . PHP_EOL;
         echo str_repeat('=', 120) . PHP_EOL;
     }
 }
